@@ -5,6 +5,7 @@ import Register from "./pages/register/register.vue";
 import WriteArticle from "./pages/writeArticle/writeArticle.vue";
 import ArticleManager from "./pages/articleManager/articleManager.vue";
 import ColumnManager from "./pages/columnManager/columnManager.vue";
+import TagManager from "./pages/tagManager/tagManager.vue";
 
 const routes = [
   {
@@ -26,6 +27,10 @@ const routes = [
       {
         path: "column-manager",
         component: ColumnManager,
+      },
+      {
+        path: "tag-manager",
+        component: TagManager,
       },
     ],
   },
