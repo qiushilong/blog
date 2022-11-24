@@ -4,6 +4,10 @@ import { h } from "vue";
 
 const menu: MenuOption[] = [
   {
+    label: "首页",
+    key: "",
+  },
+  {
     label: "写文章",
     key: "write-article",
   },

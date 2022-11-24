@@ -24,7 +24,8 @@
           @update:value="chooseFn"
         />
       </n-layout-sider>
-      <n-layout style="padding: 15px 20px">
+
+      <n-layout style="padding: 15px 20px; background-color: #f0f0f0">
         <router-view></router-view>
       </n-layout>
     </n-layout>

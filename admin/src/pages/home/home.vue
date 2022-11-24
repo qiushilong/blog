@@ -1,17 +1,17 @@
 <template>
-  <home-header></home-header>
-  <home-nav></home-nav>
+  <Header></Header>
+  <content></content>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import HomeHeader from "./header.vue";
-import HomeNav from "./nav.vue";
+import Header from "./header.vue";
+import Content from "./content.vue";
 
 export default defineComponent({
   components: {
-    HomeHeader,
-    HomeNav,
+    Header,
+    Content,
   },
 });
 </script>

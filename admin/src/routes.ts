@@ -1,4 +1,5 @@
 import Home from "./pages/home/home.vue";
+import Index from "./pages/home/index.vue";
 import Login from "./pages/login/login.vue";
 import Register from "./pages/register/register.vue";
 import WriteArticle from "./pages/writeArticle/writeArticle.vue";
@@ -10,6 +11,10 @@ const routes = [
     path: "/",
     component: Home,
     children: [
+      {
+        path: "",
+        component: Index,
+      },
       {
         path: "write-article",
         component: WriteArticle,
