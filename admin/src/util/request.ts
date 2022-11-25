@@ -1,11 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { createDiscreteApi } from "naive-ui";
-const { message, notification, dialog, loadingBar } = createDiscreteApi(
-  ["message", "dialog", "notification", "loadingBar"]
-  // {
-  //   configProviderProps: configProviderPropsRef
-  // }
-);
+const { message } = createDiscreteApi(["message"]);
 
 interface IResponse<T> {
   code: number;
@@ -19,43 +14,45 @@ const instance = axios.create({
   headers: {},
 });
 
+instance.interceptors.response.use(
+  function (response) {
+    // 2xx 范围内的状态码都会触发该函数。
+    return response;
+  },
+  function (error) {
+    // 超出 2xx 范围的状态码都会触发该函数。
+    const { code, msg } = error.response.data;
+    message.error(`${code}: ${msg}`);
+    return Promise.reject(error);
+  }
+);
+
 async function get<T>(
   url: string,
   config?: AxiosRequestConfig<any> | undefined
 ) {
-  let result: AxiosResponse<IResponse<T>, any> | {} = {};
+  let result: AxiosResponse<IResponse<T>, any> | undefined = undefined;
   try {
     result = await instance.get(url, config);
-    console.log("result", result);
-    const { code, data, msg } = (result as AxiosResponse<IResponse<T>, any>)
-      .data;
-    if (code !== 200) {
-      console.log("demo");
-      message.info(msg);
-    }
   } catch (error) {
     console.error(`get 请求异常：${error}`);
   }
-
   return result;
 }
 
-function post<T>(
+async function post<T>(
   url: string,
-  data: any,
+  payload: any,
   config?: AxiosRequestConfig<any> | undefined
 ) {
-  instance
-    .post(url, data, config)
-    .then((result: AxiosResponse<IResponse<T>, any>) => {
-      const { code, data, msg } = result.data;
-      if (code !== 200) {
-        // message.error(msg);
-      }
-    })
-    .catch((error) => {
-      console.error(`post 请求异常：${error}`);
-    });
+  let result: AxiosResponse<IResponse<T>, any> | undefined = undefined;
+  try {
+    result = await instance.post(url, payload, config);
+  } catch (error) {
+    console.error(`post 请求异常：${error}`);
+  }
+  console.log("result", result);
+  return result;
 }
 
 export default {

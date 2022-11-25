@@ -29,26 +29,21 @@
         </n-form-item>
       </n-form>
 
-      <n-button type="primary" @click="login">登录</n-button>
+      <n-button type="primary" @click="handleLogin">登录</n-button>
     </n-card>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import {
-  FormInst,
-  FormItemInst,
-  FormItemRule,
-  useMessage,
-  FormRules,
-} from "naive-ui";
+import { useRouter } from "vue-router";
+import { FormInst, FormItemInst, useMessage, FormRules } from "naive-ui";
 import { Person, LockClosed } from "@vicons/ionicons5";
-import request from "@/util/request";
+import { postLogin } from "@/services/login";
 
 interface ModelType {
-  account: string | null;
-  password: string | null;
+  account: string;
+  password: string;
 }
 
 export default defineComponent({
@@ -56,17 +51,15 @@ export default defineComponent({
     const formRef = ref<FormInst | null>(null);
     const rPasswordFormItemRef = ref<FormItemInst | null>(null);
     const message = useMessage();
+    const router = useRouter();
     const modelRef = ref<ModelType>({
-      account: null,
-      password: null,
+      account: "",
+      password: "",
     });
     const rules: FormRules = {
       account: [
         {
           required: true,
-          // validator(rule: FormItemRule, value: string) {
-          //   return true;
-          // },
           trigger: ["input", "blur"],
           message: "请输入账号",
         },
@@ -79,14 +72,19 @@ export default defineComponent({
       ],
     };
 
-    const login = () => {
+    const handleLogin = () => {
       formRef.value?.validate((errors) => {
         if (!errors) {
-          message.success("验证成功");
-          request.get("/login");
+          console.log(modelRef.value);
+          postLogin(modelRef.value).then((result) => {
+            if (result) {
+              const { code, msg, data } = result.data;
+              message.success("登录成功");
+              router.push("/");
+            }
+          });
         } else {
           console.log(errors);
-          message.error("验证失败");
         }
       });
     };
@@ -98,7 +96,7 @@ export default defineComponent({
       rules,
       Person,
       LockClosed,
-      login,
+      handleLogin,
     };
   },
 });
@@ -113,7 +111,7 @@ export default defineComponent({
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background: url(/loginBg.webp) no-repeat center center;
+  background: url(@/assets/loginBg.webp) no-repeat center center;
 
   .title {
     color: #fff;

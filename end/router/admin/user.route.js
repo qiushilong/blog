@@ -12,8 +12,18 @@ router.post("/login", koaBody(), async (ctx, next) => {
   const result = await login(ctx.request.body);
   if (result.length) {
     ctx.body = "success";
+    ctx.body = {
+      code: 200,
+      msg: "账号密码正确",
+      data: null,
+    };
   } else {
-    ctx.body = "error";
+    ctx.status = 401;
+    ctx.body = {
+      code: 401,
+      msg: "账号密码错误",
+      data: null,
+    };
   }
 });
 
