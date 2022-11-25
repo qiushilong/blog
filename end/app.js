@@ -1,11 +1,11 @@
-const Koa = require("koa");
-const app = new Koa();
-const { koaBody } = require("koa-body");
 require("module-alias/register");
-
+const Koa = require("koa");
+const tokenVerify = require("~/middleware/tokenVerify");
 const router = require("./router/router");
 
-// app.use(koaBody());
+const app = new Koa();
+
+app.use(tokenVerify);
 
 app.use(router.routes());
 

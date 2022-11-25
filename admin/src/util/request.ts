@@ -1,18 +1,34 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { createDiscreteApi } from "naive-ui";
+import { getItem } from "@/util/storage";
 const { message } = createDiscreteApi(["message"]);
 
 interface IResponse<T> {
   code: number;
   msg: string;
   data: T;
+  token?: string;
 }
 
 const instance = axios.create({
-  baseURL: "http://127.0.0.1:3000",
+  baseURL: "http://127.0.0.1:3000/api/private",
   timeout: 10000,
   headers: {},
 });
+
+instance.interceptors.request.use(
+  function (config) {
+    // 在发送请求之前做些什么
+    if (config.headers) {
+      config.headers.authorization = getItem("token");
+    }
+    return config;
+  },
+  function (error) {
+    // 对请求错误做些什么
+    return Promise.reject(error);
+  }
+);
 
 instance.interceptors.response.use(
   function (response) {
@@ -21,8 +37,17 @@ instance.interceptors.response.use(
   },
   function (error) {
     // 超出 2xx 范围的状态码都会触发该函数。
-    const { code, msg } = error.response.data;
-    message.error(`${code}: ${msg}`);
+    const {
+      status,
+      statusText,
+      data: { code, msg },
+    } = error.response;
+
+    if (msg) {
+      message.error(`${code}: ${msg}`);
+    } else {
+      message.error(`${status}: ${statusText}`);
+    }
     return Promise.reject(error);
   }
 );
@@ -42,7 +67,7 @@ async function get<T>(
 
 async function post<T>(
   url: string,
-  payload: any,
+  payload?: any,
   config?: AxiosRequestConfig<any> | undefined
 ) {
   let result: AxiosResponse<IResponse<T>, any> | undefined = undefined;
@@ -51,7 +76,6 @@ async function post<T>(
   } catch (error) {
     console.error(`post 请求异常：${error}`);
   }
-  console.log("result", result);
   return result;
 }
 

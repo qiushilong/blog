@@ -40,6 +40,7 @@ import { useRouter } from "vue-router";
 import { FormInst, FormItemInst, useMessage, FormRules } from "naive-ui";
 import { Person, LockClosed } from "@vicons/ionicons5";
 import { postLogin } from "@/services/login";
+import { setItem } from "@/util/storage";
 
 interface ModelType {
   account: string;
@@ -78,8 +79,9 @@ export default defineComponent({
           console.log(modelRef.value);
           postLogin(modelRef.value).then((result) => {
             if (result) {
-              const { code, msg, data } = result.data;
+              const { code, msg, data, token } = result.data;
               message.success("登录成功");
+              setItem("token", token as string);
               router.push("/");
             }
           });

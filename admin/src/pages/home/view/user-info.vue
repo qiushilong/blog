@@ -7,34 +7,38 @@
         src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
       />
       <div class="name-role">
-        <div class="name">{{ username }}</div>
-        <div class="role">{{ role }}</div>
+        <div class="name">{{ userInfo?.name }}</div>
+        <div class="role">{{ userInfo?.role }}</div>
       </div>
     </div>
 
     <hr class="hr" />
 
     <div class="last-info">
-      <div class="color999">上次登录时间：{{ lastLoginTime }}</div>
-      <div class="color999">上次登录地点：{{ lastLoginAddress }}</div>
+      <div class="color999">上次登录时间：{{ userInfo?.lastLoginTime }}</div>
+      <div class="color999">上次登录地点：{{ userInfo?.lastLoginAddress }}</div>
     </div>
   </n-card>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
+import { fetchUserInfo } from "@/services/login";
+import { IUserInfo } from "@/types/user";
 
 export default defineComponent({
   setup() {
-    const username = ref<string>("qsl");
-    const role = ref<string>("管理员");
-    const lastLoginTime = ref<string>("2022-11-20");
-    const lastLoginAddress = ref<string>("深圳");
+    const userInfo = ref<IUserInfo>();
+
+    fetchUserInfo().then((result) => {
+      console.log(result);
+      if (result) {
+        userInfo.value = result.data.data;
+      }
+    });
+
     return {
-      username,
-      role,
-      lastLoginTime,
-      lastLoginAddress,
+      userInfo,
     };
   },
 });
