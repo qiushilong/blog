@@ -11,7 +11,7 @@ interface IResponse<T> {
 }
 
 const instance = axios.create({
-  baseURL: "http://127.0.0.1:3000/api/private",
+  baseURL: "http://127.0.0.1:8080/api/private",
   timeout: 10000,
   headers: {},
 });
