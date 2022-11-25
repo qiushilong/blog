@@ -26,6 +26,11 @@ export default defineConfig({
       resolvers: [NaiveUiResolver()],
     }),
   ],
+  resolve: {
+    alias: {
+      "@": resolve(__dirname, "./src"),
+    },
+  },
   css: {
     // 导入 less 全局变量
     preprocessorOptions: {

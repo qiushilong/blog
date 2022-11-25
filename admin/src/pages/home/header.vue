@@ -2,7 +2,7 @@
   <header class="header">
     <div class="logo" @click="goHome">个人博客后台管理系统</div>
 
-    <div class="logout">logout</div>
+    <div class="logout" @click="goLogin">logout</div>
   </header>
 </template>
 
@@ -17,8 +17,13 @@ export default defineComponent({
     const goHome = () => {
       router.push("/");
     };
+
+    const goLogin = () => {
+      router.push("/login");
+    };
     return {
       goHome,
+      goLogin,
     };
   },
 });
