@@ -4,7 +4,6 @@
       <n-list-item v-for="item in listData" :key="item.id">
         <n-checkbox
           :checked="item.finished"
-          :value="item.finished"
           @update:checked="handleCheckedChange(item.id, $event)"
         />
         <span :class="{ finished: item.finished }">

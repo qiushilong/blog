@@ -6,6 +6,7 @@ import WriteArticle from "./pages/writeArticle/writeArticle.vue";
 import ArticleManager from "./pages/articleManager/articleManager.vue";
 import ColumnManager from "./pages/columnManager/columnManager.vue";
 import TagManager from "./pages/tagManager/tagManager.vue";
+import PersonalCenter from "./pages/personalCenter/personalCenter.vue";
 
 const routes = [
   {
@@ -31,6 +32,10 @@ const routes = [
       {
         path: "tag-manager",
         component: TagManager,
+      },
+      {
+        path: "personal-center",
+        component: PersonalCenter,
       },
     ],
   },

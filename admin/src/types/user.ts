@@ -5,6 +5,7 @@ export interface IUserInfo {
   lastLoginAddress: string;
   lastLoginTime: string;
   name: string;
-  phone: null;
-  role: null;
+  phone: string;
+  role: string;
+  motto: string;
 }

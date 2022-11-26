@@ -13,7 +13,7 @@
       />
 
       <n-dropdown trigger="hover" :options="options" @select="handleSelect">
-        {{ userInfo?.role }}
+        {{ userInfo?.role || "临时用户" }}
       </n-dropdown>
     </div>
   </header>
@@ -24,7 +24,6 @@ import { defineComponent, inject } from "vue";
 import { useRouter } from "vue-router";
 import { NotificationsOutline } from "@vicons/ionicons5";
 import { IUserInfo } from "@/types/user";
-import { getItem } from "@/util/storage";
 
 export default defineComponent({
   setup() {
@@ -36,18 +35,14 @@ export default defineComponent({
       router.push("/");
     };
 
-    const goLogin = () => {
-      router.push("/login");
-    };
     return {
       goHome,
-      goLogin,
       NotificationsOutline,
       userInfo,
       options: [
         {
           label: "个人中心",
-          key: "my center",
+          key: "personalCenter",
         },
         {
           label: "退出登录",
@@ -56,7 +51,9 @@ export default defineComponent({
       ],
       handleSelect(key: string | number) {
         if (key === "logout") {
-          goLogin();
+          router.push("/login");
+        } else if (key === "personalCenter") {
+          router.push("/personal-center");
         }
       },
     };
