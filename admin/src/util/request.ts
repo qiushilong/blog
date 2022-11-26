@@ -43,6 +43,10 @@ instance.interceptors.response.use(
       data: { code, msg },
     } = error.response;
 
+    if (status === 401) {
+      location.pathname = "/login";
+    }
+
     if (msg) {
       message.error(`${code}: ${msg}`);
     } else {

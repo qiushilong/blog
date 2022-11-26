@@ -11,14 +11,19 @@
     <hr class="hr" />
 
     <div class="last-info">
-      <div class="color999">上次登录时间：{{ userInfo?.lastLoginTime }}</div>
+      <div class="color999">
+        上次登录时间：{{
+          dayjs(userInfo?.lastLoginTime).format("YYYY-MM-DD HH:mm:ss")
+        }}
+      </div>
       <div class="color999">上次登录地点：{{ userInfo?.lastLoginAddress }}</div>
     </div>
   </n-card>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, inject } from "vue";
+import { defineComponent, inject } from "vue";
+import dayjs from "dayjs";
 import { IUserInfo } from "@/types/home";
 
 export default defineComponent({
@@ -26,6 +31,7 @@ export default defineComponent({
     const userInfo = inject<IUserInfo>("userInfo");
     return {
       userInfo,
+      dayjs,
     };
   },
 });
