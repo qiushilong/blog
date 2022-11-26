@@ -81,7 +81,8 @@ export default defineComponent({
             if (result) {
               const { code, msg, data, token } = result.data;
               message.success("登录成功");
-              setItem("token", token as string);
+              setItem("token", token);
+              setItem("userInfo", data);
               router.push("/");
             }
           });

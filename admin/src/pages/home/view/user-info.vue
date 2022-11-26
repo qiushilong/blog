@@ -1,11 +1,7 @@
 <template>
   <n-card class="user-info" hoverable>
     <div class="base-info">
-      <n-avatar
-        round
-        :size="120"
-        src="https://07akioni.oss-cn-beijing.aliyuncs.com/07akioni.jpeg"
-      />
+      <n-avatar round :size="120" :src="userInfo?.avatar" />
       <div class="name-role">
         <div class="name">{{ userInfo?.name }}</div>
         <div class="role">{{ userInfo?.role }}</div>
@@ -22,21 +18,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import { fetchUserInfo } from "@/services/login";
+import { defineComponent, ref, inject } from "vue";
 import { IUserInfo } from "@/types/user";
 
 export default defineComponent({
   setup() {
-    const userInfo = ref<IUserInfo>();
-
-    fetchUserInfo().then((result) => {
-      console.log(result);
-      if (result) {
-        userInfo.value = result.data.data;
-      }
-    });
-
+    const userInfo = inject<IUserInfo>("userInfo");
     return {
       userInfo,
     };

@@ -14,10 +14,12 @@ router.post("/login", koaBody(), async (ctx, next) => {
   if (result.length !== 0) {
     const token = jwt.sign(ctx.request.body, secret, { expiresIn });
 
+    delete result[0].password;
+
     ctx.body = {
       code: 200,
       msg: "账号密码正确",
-      data: null,
+      data: result[0],
       token,
     };
   } else {

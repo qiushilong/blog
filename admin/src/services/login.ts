@@ -5,7 +5,7 @@ export async function postLogin(payload: {
   account: string;
   password: string;
 }) {
-  return await request.post<null>("/login", payload);
+  return await request.post<IUserInfo>("/login", payload);
 }
 
 export async function fetchUserInfo() {
