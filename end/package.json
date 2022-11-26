@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon app.js",
+    "api": "apidoc -i router/ -o apidoc/"
   },
   "author": "",
   "license": "ISC",
@@ -16,9 +17,15 @@
     "mysql2": "^2.3.3"
   },
   "devDependencies": {
+    "apidoc": "^0.53.1",
     "module-alias": "^2.2.2"
   },
   "_moduleAliases": {
     "~": "."
+  },
+  "apidoc": {
+    "title": "blog 接口文档",
+    "url": "/api/private",
+    "version": "0.1.0"
   }
 }

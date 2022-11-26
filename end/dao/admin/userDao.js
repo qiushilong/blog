@@ -1,8 +1,6 @@
 const pool = require("~/connection/connection");
 
-async function login(payload) {
-  const { account, password } = payload;
-
+async function login(account, password) {
   const [res] = await pool.query(
     "select * from user where account=? and password=?",
     [account, password]
