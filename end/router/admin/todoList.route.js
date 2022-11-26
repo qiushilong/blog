@@ -25,9 +25,9 @@ const router = new Router();
  *         "data": [
  *             {
  *                 "id": 1,
- *                 "text": "待办1",
+ *                 "content": "待办1",
  *                 "createDate": "2022-11-26T08:02:41.000Z",
- *                 "checked": 1,
+ *                 "finished": 1,
  *                 "updateDate": null
  *             }
  *         ]
@@ -39,7 +39,10 @@ router.get("/todoList/info", async (ctx, next) => {
     ctx.body = {
       code: 200,
       msg: "获取 todo list 成功",
-      data: result,
+      data: result.map((item) => {
+        item.finished = !!item.finished;
+        return item;
+      }),
     };
   } catch (error) {
     console.log(error);
@@ -56,8 +59,8 @@ router.get("/todoList/info", async (ctx, next) => {
  * @apiName addTodoList
  * @apiGroup todoList 模块
  *
- * @apiParam {string} text todo 内容
- * @apiParam {boolean} checked 是否选中
+ * @apiParam {string} content todo 内容
+ * @apiParam {boolean} finished 是否选中
  *
  * @apiSuccess {number} code 状态码
  * @apiSuccess {string} msg 提示信息
@@ -73,8 +76,8 @@ router.get("/todoList/info", async (ctx, next) => {
  */
 router.post("/todoList/info/add", koaBody(), async (ctx, next) => {
   try {
-    const { text, checked } = ctx.request.body;
-    await addTodoList(text, +checked);
+    const { content, finished } = ctx.request.body;
+    await addTodoList(content, +finished);
     ctx.body = {
       code: 200,
       msg: "添加 todo list 成功",
@@ -96,8 +99,8 @@ router.post("/todoList/info/add", koaBody(), async (ctx, next) => {
  * @apiGroup todoList 模块
  *
  * @apiParam {string} id id
- * @apiParam {string} text todo 内容
- * @apiParam {boolean} checked 是否选中
+ * @apiParam {string} content todo 内容
+ * @apiParam {boolean} finished 是否选中
  *
  * @apiSuccess {number} code 状态码
  * @apiSuccess {string} msg 提示信息
@@ -113,8 +116,8 @@ router.post("/todoList/info/add", koaBody(), async (ctx, next) => {
  */
 router.post("/todoList/info/update", koaBody(), async (ctx, next) => {
   try {
-    const { id, text, checked } = ctx.request.body;
-    await updateTodoList(id, text, checked);
+    const { id, content, finished } = ctx.request.body;
+    await updateTodoList(id, content, +finished);
     ctx.body = {
       code: 200,
       msg: "更新 todo list 成功",

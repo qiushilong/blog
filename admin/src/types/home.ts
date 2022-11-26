@@ -1,5 +1,6 @@
+// 用户信息类型
 export interface IUserInfo {
-  id: string;
+  id: number;
   account: string;
   avatar: string;
   lastLoginAddress: string;
@@ -8,4 +9,13 @@ export interface IUserInfo {
   phone: string;
   role: string;
   motto: string;
+}
+
+// todo 列表类型
+export interface ITodoItem {
+  id: number;
+  content: string;
+  createDate: string;
+  updateDate: string;
+  finished: boolean;
 }

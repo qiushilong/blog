@@ -23,7 +23,7 @@
 import { defineComponent, inject } from "vue";
 import { useRouter } from "vue-router";
 import { NotificationsOutline } from "@vicons/ionicons5";
-import { IUserInfo } from "@/types/user";
+import { IUserInfo } from "@/types/home";
 
 export default defineComponent({
   setup() {

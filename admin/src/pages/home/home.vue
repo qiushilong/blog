@@ -5,10 +5,10 @@
 
 <script lang="ts">
 import { defineComponent, provide, ref } from "vue";
-import { fetchUserInfo } from "@/services/login";
+import { fetchUserInfo } from "@/services/home";
 import Header from "./header.vue";
 import Content from "./content.vue";
-import { IUserInfo } from "@/types/user";
+import { IUserInfo } from "@/types/home";
 
 export default defineComponent({
   components: {

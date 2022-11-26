@@ -16,37 +16,32 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-
-interface IToDoItem {
-  id: number;
-  content: string;
-  finished: boolean;
-}
+import { ITodoItem } from "@/types/home";
+import { fetchTodoList, updateTodoList } from "@/services/home";
 
 export default defineComponent({
   setup() {
-    const listData = ref<IToDoItem[]>([
-      {
-        id: 1,
-        content: "待办1",
-        finished: false,
-      },
-      {
-        id: 2,
-        content: "待办2",
-        finished: false,
-      },
-      {
-        id: 3,
-        content: "完成2",
-        finished: true,
-      },
-    ]);
+    const listData = ref<ITodoItem[]>([]);
+
+    const getTodoList = () => {
+      fetchTodoList().then((result) => {
+        if (result) {
+          listData.value = result.data.data;
+          console.log(result);
+        }
+      });
+    };
+
+    getTodoList();
 
     const handleCheckedChange = (id: number, value: boolean) => {
-      console.log(value, id);
-      (listData.value.find((item) => item.id === id) as IToDoItem).finished =
-        value;
+      updateTodoList({ id, finished: value }).then((result) => {
+        if (result) {
+          (
+            listData.value.find((item) => item.id === id) as ITodoItem
+          ).finished = value;
+        }
+      });
     };
 
     return {

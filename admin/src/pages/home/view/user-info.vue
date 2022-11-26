@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, inject } from "vue";
-import { IUserInfo } from "@/types/user";
+import { IUserInfo } from "@/types/home";
 
 export default defineComponent({
   setup() {

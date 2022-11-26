@@ -39,7 +39,7 @@ import { defineComponent, ref } from "vue";
 import { useRouter } from "vue-router";
 import { FormInst, FormItemInst, useMessage, FormRules } from "naive-ui";
 import { Person, LockClosed } from "@vicons/ionicons5";
-import { postLogin } from "@/services/login";
+import { postLogin } from "@/services/home";
 import { setItem } from "@/util/storage";
 
 interface ModelType {
