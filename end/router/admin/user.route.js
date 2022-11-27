@@ -94,11 +94,8 @@ router.get("/user/info", koaBody(), async (ctx, next) => {
     header: { authorization: token },
   } = ctx.request;
 
-  console.log(token);
-
   try {
     const decoded = jwt.verify(token, secret);
-    console.log(decoded);
     const { account } = decoded;
     const result = await getUserInfo(account);
     console.log(result);

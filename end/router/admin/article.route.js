@@ -1,27 +1,27 @@
 const Router = require("@koa/router");
 const { koaBody } = require("koa-body");
 const {
-  getTodoList,
-  addTodoList,
-  updateTodoList,
-  deleteTodoList,
-} = require("~/dao/admin/todoListDao");
+  getArticle,
+  addArticle,
+  updateArticle,
+  deleteArticle,
+} = require("~/dao/admin/articleDao");
 const router = new Router();
 
 /**
- * @api {get} /todoList/info 获取 todo list
- * @apiName getTodoList
- * @apiGroup todoList 模块
+ * @api {get} /article/info 获取 article
+ * @apiName getArticle
+ * @apiGroup article 模块
  *
  * @apiSuccess {number} code 状态码
  * @apiSuccess {string} msg 提示信息
- * @apiSuccess {string} data todo list 列表
+ * @apiSuccess {string} data article 列表
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *     {
  *         "code": 200,
- *         "msg": "获取 todo list 成功",
+ *         "msg": "获取 article 成功",
  *         "data": [
  *             {
  *                 "id": 1,
@@ -33,31 +33,28 @@ const router = new Router();
  *         ]
  *     }
  */
-router.get("/todoList/info", async (ctx, next) => {
+router.get("/article/info", async (ctx, next) => {
   try {
-    const result = await getTodoList();
+    const result = await getArticle();
     ctx.body = {
       code: 200,
-      msg: "获取 todo list 成功",
-      data: result.map((item) => {
-        item.finished = !!item.finished;
-        return item;
-      }),
+      msg: "获取 article 成功",
+      data: result,
     };
   } catch (error) {
     console.log(error);
     ctx.body = {
       code: 500,
-      msg: "获取 todo list 失败",
+      msg: "获取 article 失败",
       data: null,
     };
   }
 });
 
 /**
- * @api {post} /todoList/add 添加 todo list 项
- * @apiName addTodoList
- * @apiGroup todoList 模块
+ * @api {post} /article/add 添加 article 项
+ * @apiName addArticle
+ * @apiGroup article 模块
  *
  * @apiParam {string} content todo 内容
  * @apiParam {boolean} finished 是否选中
@@ -70,33 +67,33 @@ router.get("/todoList/info", async (ctx, next) => {
  *     HTTP/1.1 200 OK
  *     {
  *         "code": 200,
- *         "msg": "添加 todo list 成功",
+ *         "msg": "添加 article 成功",
  *         "data": null
  *     }
  */
-router.post("/todoList/add", koaBody(), async (ctx, next) => {
+router.post("/article/add", koaBody(), async (ctx, next) => {
   try {
-    const { content, finished } = ctx.request.body;
-    await addTodoList(content, +finished);
+    const { title, content, cover, specialColumn, tags } = ctx.request.body;
+    await addArticle(title, content, cover, specialColumn, tags);
     ctx.body = {
       code: 200,
-      msg: "添加 todo list 成功",
+      msg: "添加 article 成功",
       data: null,
     };
   } catch (error) {
     console.log(error);
     ctx.body = {
       code: 500,
-      msg: "添加 todo list 失败",
+      msg: "添加 article 失败",
       data: null,
     };
   }
 });
 
 /**
- * @api {post} /todoList/update 更新 todo list 项
- * @apiName updateTodoList
- * @apiGroup todoList 模块
+ * @api {post} /article/update 更新 article 项
+ * @apiName updateArticle
+ * @apiGroup article 模块
  *
  * @apiParam {string} id id
  * @apiParam {string} content todo 内容
@@ -110,33 +107,33 @@ router.post("/todoList/add", koaBody(), async (ctx, next) => {
  *     HTTP/1.1 200 OK
  *     {
  *         "code": 200,
- *         "msg": "更新 todo list 成功",
+ *         "msg": "更新 article 成功",
  *         "data": null
  *     }
  */
-router.post("/todoList/update", koaBody(), async (ctx, next) => {
+router.post("/article/update", koaBody(), async (ctx, next) => {
   try {
-    const { id, content, finished } = ctx.request.body;
-    await updateTodoList(id, content, +finished);
+    const { id, title, content, cover, column, tags } = ctx.request.body;
+    await updateArticle(id, title, content, cover, column, tags);
     ctx.body = {
       code: 200,
-      msg: "更新 todo list 成功",
+      msg: "更新 article 成功",
       data: null,
     };
   } catch (error) {
     console.log(error);
     ctx.body = {
       code: 500,
-      msg: "更新 todo list 失败",
+      msg: "更新 article 失败",
       data: null,
     };
   }
 });
 
 /**
- * @api {post} /todoList/delete 删除 todo list 项
- * @apiName deleteTodoList
- * @apiGroup todoList 模块
+ * @api {post} /article/delete 删除 article 项
+ * @apiName deleteArticle
+ * @apiGroup article 模块
  *
  * @apiParam {string} id id
  *
@@ -148,24 +145,24 @@ router.post("/todoList/update", koaBody(), async (ctx, next) => {
  *     HTTP/1.1 200 OK
  *     {
  *         "code": 200,
- *         "msg": "删除 todo list 成功",
+ *         "msg": "删除 article 成功",
  *         "data": null
  *     }
  */
-router.post("/todoList/delete", koaBody(), async (ctx, next) => {
+router.post("/article/delete", koaBody(), async (ctx, next) => {
   try {
     const { id } = ctx.request.body;
-    await deleteTodoList(id);
+    await deleteArticle(id);
     ctx.body = {
       code: 200,
-      msg: "删除 todo list 成功",
+      msg: "删除 article 成功",
       data: null,
     };
   } catch (error) {
     console.log(error);
     ctx.body = {
       code: 500,
-      msg: "删除 todo list 失败",
+      msg: "删除 article 失败",
       data: null,
     };
   }

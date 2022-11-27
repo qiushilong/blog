@@ -1,7 +1,7 @@
 <template>
   <md-editor
     class="editor"
-    v-model="text"
+    v-model="content"
     :toolbars="toolbars"
     @onSave="saveToLocal"
   >
@@ -39,7 +39,7 @@
       </n-form-item>
       <n-form-item path="column" label="专栏">
         <n-select
-          v-model:value="model.column"
+          v-model:value="model.specialColumn"
           :options="columnOptions"
           placeholder="请选择专栏"
           clearable
@@ -71,11 +71,12 @@ import "md-editor-v3/lib/style.css";
 import { setItem, getItem } from "@/util/storage";
 import { useMessage, FormRules, FormInst } from "naive-ui";
 import { CloudUploadOutline } from "@vicons/ionicons5";
+import { addArticle } from "@/services/article";
 const NormalToolbar = MdEditor.NormalToolbar;
 
 interface ModelType {
   title: string;
-  column: string;
+  specialColumn: string;
   tags?: any[];
 }
 
@@ -85,7 +86,7 @@ export default defineComponent({
     NormalToolbar,
   },
   setup() {
-    const text = ref<string>(getItem("md"));
+    const content = ref<string>(getItem("md"));
     const message = useMessage();
     const toolbars: ToolbarNames[] = [
       "bold",
@@ -125,7 +126,7 @@ export default defineComponent({
     const formRef = ref<FormInst | null>(null);
     const modelRef = ref<ModelType>({
       title: "",
-      column: "",
+      specialColumn: "",
     });
 
     const rules: FormRules = {
@@ -150,7 +151,7 @@ export default defineComponent({
 
     const tagOptions = [
       {
-        label: "JavaScrit",
+        label: "JavaScript",
         value: "js",
       },
       {
@@ -164,19 +165,26 @@ export default defineComponent({
     ];
 
     const saveToLocal = () => {
-      setItem("md", text.value);
+      setItem("md", content.value);
       message.success("成功保存在本地");
     };
 
     const saveToServer = () => {
-      setItem("md", text.value);
+      setItem("md", content.value);
       showModal.value = true;
     };
 
     const submit = () => {
       formRef.value?.validate((errors) => {
         if (!errors) {
-          console.log(modelRef.value, text);
+          console.log(modelRef.value, content);
+          addArticle({ content: content.value, ...modelRef.value }).then(
+            (result) => {
+              if (result) {
+                message.success("添加文章成功");
+              }
+            }
+          );
         } else {
           console.log(errors);
         }
@@ -184,7 +192,7 @@ export default defineComponent({
     };
 
     return {
-      text,
+      content,
       saveToLocal,
       toolbars,
       saveToServer,

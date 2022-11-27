@@ -20,5 +20,5 @@ export async function updateTodoList(payload: {
   id: number;
   finished: boolean;
 }) {
-  return await request.post<null>("/todoList/info/update", payload);
+  return await request.post<null>("/todoList/update", payload);
 }
