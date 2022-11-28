@@ -19,6 +19,7 @@
           :options="menuOptions"
           :inverted="true"
           @update:value="chooseFn"
+          :value="value"
         />
       </n-layout-sider>
 
@@ -40,12 +41,14 @@ import menuOptions from "./menu";
 export default defineComponent({
   setup() {
     const router = useRouter();
+    const value = ref(location.pathname.split("/").at(-1));
 
     return {
+      value,
       collapsed: ref(true),
       menuOptions,
       chooseFn(key: string, item: MenuOption) {
-        console.log(router);
+        value.value = key;
         router.push(`/${key}`);
       },
     };

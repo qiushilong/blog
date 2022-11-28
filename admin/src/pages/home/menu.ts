@@ -13,6 +13,7 @@ function renderIcon(icon: Component) {
   return () => h(NIcon, null, { default: () => h(icon) });
 }
 
+// 每一项的 key 应当保持唯一
 const menu: MenuOption[] = [
   {
     label: "首页",
