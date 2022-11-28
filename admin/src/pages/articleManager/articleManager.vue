@@ -100,7 +100,7 @@ export default defineComponent({
     const message = useMessage();
     fetchArticle().then((result) => {
       if (result) {
-        const { code, data, msg } = result.data;
+        const { code, data } = result.data;
         if (code === 200) {
           dataSource.value = data;
         }

@@ -1,25 +1,62 @@
 <template>
-  <n-card id="container-card">
+  <n-card id="container-card" title="">
+    <header class="header">
+      <n-form
+        ref="formRef"
+        inline
+        :label-width="80"
+        :model="formValue"
+        size="medium"
+        label-placement="left"
+      >
+        <n-form-item label="标题：" path="title">
+          <n-input v-model:value="formValue.title" placeholder="标题" />
+        </n-form-item>
+      </n-form>
+
+      <n-button type="primary" @click="showAddDrawer">新增</n-button>
+    </header>
+
     <n-grid :x-gap="12" :y-gap="8" :cols="cols">
-      <n-grid-item>
+      <n-grid-item v-for="column in dataSource">
         <div class="light-green card">
-          <div class="title">ts 使用指南</div>
-          <p class="introduce">ts 使用指南 ......</p>
-          <div class="createDate">2022.10</div>
+          <div class="title">{{ column.title }}</div>
+          <p class="introduce">{{ column.introduce }}</p>
+          <div class="createDate">{{ column.createDate }}</div>
         </div>
       </n-grid-item>
     </n-grid>
   </n-card>
+
+  <add-drawer :visible="drawerVisible" @updateShow="updateVisible"></add-drawer>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, onBeforeUnmount } from "vue";
 import { debounce } from "lodash";
-import ColumnCard from "@/components/columnCard.vue";
+import { FormInst } from "naive-ui";
+import { fetchColumn } from "@/services/column";
+import { IColumn } from "@/types/column";
+import AddDrawer from "./view/addDrawer.vue";
 
 export default defineComponent({
+  components: {
+    AddDrawer,
+  },
   setup() {
     const cols = ref<number>(5);
+    const dataSource = ref<IColumn[]>([]);
+    const formRef = ref<FormInst | null>(null);
+    const drawerVisible = ref<boolean>(false);
+
+    fetchColumn().then((result) => {
+      if (result) {
+        const { code, data } = result.data;
+        if (code === 200) {
+          dataSource.value = data;
+        }
+      }
+    });
 
     const resizeObserver = new ResizeObserver(
       debounce(([entry]) => {
@@ -44,8 +81,21 @@ export default defineComponent({
     });
 
     return {
-      ColumnCard,
       cols,
+      dataSource,
+      formValue: ref({
+        title: "",
+        specialColumn: "",
+        tags: "",
+      }),
+      formRef,
+      drawerVisible,
+      updateVisible(visible: boolean) {
+        drawerVisible.value = visible;
+      },
+      showAddDrawer() {
+        drawerVisible.value = true;
+      },
     };
   },
 });
@@ -53,6 +103,11 @@ export default defineComponent({
 
 <style scoped lang="less">
 #container-card {
+  .header {
+    display: flex;
+    justify-content: space-between;
+  }
+
   .card {
     padding: 10px;
     width: 150px;
@@ -63,8 +118,6 @@ export default defineComponent({
     }
     .title {
       font-weight: bold;
-    }
-    .introduce {
     }
   }
 }
