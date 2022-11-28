@@ -106,6 +106,7 @@ router.get("/user/info", koaBody(), async (ctx, next) => {
     };
   } catch (error) {
     console.log(error);
+    ctx.status = 500;
     ctx.body = {
       code: 500,
       msg: "获取用户信息失败",

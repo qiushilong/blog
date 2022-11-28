@@ -12,9 +12,7 @@
 
     <div class="last-info">
       <div class="color999">
-        上次登录时间：{{
-          dayjs(userInfo?.lastLoginTime).format("YYYY-MM-DD HH:mm:ss")
-        }}
+        上次登录时间：{{ formatDate(userInfo?.lastLoginTime) }}
       </div>
       <div class="color999">上次登录地点：{{ userInfo?.lastLoginAddress }}</div>
     </div>
@@ -23,7 +21,7 @@
 
 <script lang="ts">
 import { defineComponent, inject } from "vue";
-import dayjs from "dayjs";
+import { formatDate } from "@/util/date";
 import { IUserInfo } from "@/types/home";
 
 export default defineComponent({
@@ -31,7 +29,7 @@ export default defineComponent({
     const userInfo = inject<IUserInfo>("userInfo");
     return {
       userInfo,
-      dayjs,
+      formatDate,
     };
   },
 });

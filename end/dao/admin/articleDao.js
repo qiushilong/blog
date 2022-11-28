@@ -6,14 +6,16 @@ async function getArticleList() {
   return res;
 }
 
-async function addArticle(title, specialColumn, cover, column, tags) {
+async function addArticle(payload) {
+  const { title, specialColumn, cover, content, tags } = payload;
   await pool.query(
     "insert into article(id,title,createDate,content,cover,specialColumn,tags) values(null,?,now(),?,?,?,?)",
-    [title, "1", cover, specialColumn, JSON.stringify(tags)]
+    [title, content, cover, specialColumn, JSON.stringify(tags)]
   );
 }
 
-async function updateArticle(id, title, content, cover, column, tags) {
+async function updateArticle(payload) {
+  const { id, title, content, cover, column, tags } = payload;
   const [str, arr] = updateTool({ title, content, cover, column, tags });
   console.log(str, arr);
   await pool.query(`update article set updateDate=now(),${str} where id=?`, [

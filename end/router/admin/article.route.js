@@ -1,7 +1,7 @@
 const Router = require("@koa/router");
 const { koaBody } = require("koa-body");
 const {
-  getArticle,
+  getArticleList,
   addArticle,
   updateArticle,
   deleteArticle,
@@ -24,25 +24,32 @@ const router = new Router();
  *         "msg": "获取 article 成功",
  *         "data": [
  *             {
- *                 "id": 1,
- *                 "content": "待办1",
- *                 "createDate": "2022-11-26T08:02:41.000Z",
- *                 "finished": 1,
- *                 "updateDate": null
+ *               "id": 1,
+ *               "title": "demo1",
+ *               "createDate": "2022-11-26T16:21:29.000Z",
+ *               "updateDate": null,
+ *               "content": "# hello",
+ *               "cover": "",
+ *               "specialColumn": "",
+ *               "tags": ""
  *             }
  *         ]
  *     }
  */
 router.get("/article/info", async (ctx, next) => {
   try {
-    const result = await getArticle();
+    const result = await getArticleList();
     ctx.body = {
       code: 200,
       msg: "获取 article 成功",
-      data: result,
+      data: result.map((item) => {
+        item.tags = item.tags ? JSON.parse(item.tags) : [];
+        return item;
+      }),
     };
   } catch (error) {
     console.log(error);
+    ctx.status = 500;
     ctx.body = {
       code: 500,
       msg: "获取 article 失败",
@@ -56,8 +63,11 @@ router.get("/article/info", async (ctx, next) => {
  * @apiName addArticle
  * @apiGroup article 模块
  *
- * @apiParam {string} content todo 内容
- * @apiParam {boolean} finished 是否选中
+ * @apiParam {string} title 标题
+ * @apiParam {string} specialColumn 专栏
+ * @apiParam {string} cover 封面
+ * @apiParam {string} content 内容
+ * @apiParam {string[]} tags 标签数组
  *
  * @apiSuccess {number} code 状态码
  * @apiSuccess {string} msg 提示信息
@@ -73,8 +83,7 @@ router.get("/article/info", async (ctx, next) => {
  */
 router.post("/article/add", koaBody(), async (ctx, next) => {
   try {
-    const { title, content, cover, specialColumn, tags } = ctx.request.body;
-    await addArticle(title, content, cover, specialColumn, tags);
+    await addArticle(ctx.request.body);
     ctx.body = {
       code: 200,
       msg: "添加 article 成功",
@@ -82,6 +91,7 @@ router.post("/article/add", koaBody(), async (ctx, next) => {
     };
   } catch (error) {
     console.log(error);
+    ctx.status = 500;
     ctx.body = {
       code: 500,
       msg: "添加 article 失败",
@@ -96,8 +106,11 @@ router.post("/article/add", koaBody(), async (ctx, next) => {
  * @apiGroup article 模块
  *
  * @apiParam {string} id id
- * @apiParam {string} content todo 内容
- * @apiParam {boolean} finished 是否选中
+ * @apiParam {string} title 标题
+ * @apiParam {string} specialColumn 专栏
+ * @apiParam {string} cover 封面
+ * @apiParam {string} content 内容
+ * @apiParam {string[]} tags 标签数组
  *
  * @apiSuccess {number} code 状态码
  * @apiSuccess {string} msg 提示信息
@@ -113,8 +126,7 @@ router.post("/article/add", koaBody(), async (ctx, next) => {
  */
 router.post("/article/update", koaBody(), async (ctx, next) => {
   try {
-    const { id, title, content, cover, column, tags } = ctx.request.body;
-    await updateArticle(id, title, content, cover, column, tags);
+    await updateArticle(ctx.request.body);
     ctx.body = {
       code: 200,
       msg: "更新 article 成功",
@@ -122,6 +134,7 @@ router.post("/article/update", koaBody(), async (ctx, next) => {
     };
   } catch (error) {
     console.log(error);
+    ctx.status = 500;
     ctx.body = {
       code: 500,
       msg: "更新 article 失败",
@@ -160,6 +173,7 @@ router.post("/article/delete", koaBody(), async (ctx, next) => {
     };
   } catch (error) {
     console.log(error);
+    ctx.status = 500;
     ctx.body = {
       code: 500,
       msg: "删除 article 失败",

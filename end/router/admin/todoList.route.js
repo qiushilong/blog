@@ -46,6 +46,7 @@ router.get("/todoList/info", async (ctx, next) => {
     };
   } catch (error) {
     console.log(error);
+    ctx.status = 500;
     ctx.body = {
       code: 500,
       msg: "获取 todo list 失败",
@@ -85,6 +86,7 @@ router.post("/todoList/add", koaBody(), async (ctx, next) => {
     };
   } catch (error) {
     console.log(error);
+    ctx.status = 500;
     ctx.body = {
       code: 500,
       msg: "添加 todo list 失败",
@@ -125,6 +127,7 @@ router.post("/todoList/update", koaBody(), async (ctx, next) => {
     };
   } catch (error) {
     console.log(error);
+    ctx.status = 500;
     ctx.body = {
       code: 500,
       msg: "更新 todo list 失败",
@@ -163,6 +166,7 @@ router.post("/todoList/delete", koaBody(), async (ctx, next) => {
     };
   } catch (error) {
     console.log(error);
+    ctx.status = 500;
     ctx.body = {
       code: 500,
       msg: "删除 todo list 失败",
