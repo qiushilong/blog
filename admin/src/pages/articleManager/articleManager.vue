@@ -80,13 +80,16 @@ const columns: DataTableColumns<IArticle> = [
     title: "标签",
     key: "tags",
     render(row) {
+      if (row.tags.length === 0) {
+        return "";
+      }
       return row.tags.map((tag) =>
         h(
           NTag,
           {
             style: "margin-right:10px",
           },
-          tag
+          { default: () => tag }
         )
       );
     },

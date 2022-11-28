@@ -8,14 +8,10 @@
     <n-drawer-content title="新增专栏" closable>
       <n-form ref="formRef" :model="model" :rules="rules">
         <n-form-item path="title" label="标题">
-          <n-input
-            v-model:value="model.title"
-            @keydown.enter.prevent
-            placeholder=""
-          />
+          <n-input v-model:value="model.title" @keydown.enter.prevent />
         </n-form-item>
         <n-form-item path="introduce" label="介绍">
-          <n-input v-model:value="model.introduce" placeholder="" />
+          <n-input v-model:value="model.introduce" />
         </n-form-item>
         <n-form-item path="cover" label="封面">
           <n-upload

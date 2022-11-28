@@ -17,15 +17,32 @@
       <n-button type="primary" @click="showAddDrawer">新增</n-button>
     </header>
 
-    <n-grid :x-gap="12" :y-gap="8" :cols="cols">
-      <n-grid-item v-for="column in dataSource">
-        <div class="light-green card">
+    <n-grid :x-gap="12" :y-gap="20" :cols="cols">
+      <n-grid-item v-for="(column, index) in dataSource" :key="column.id">
+        <div :class="`card ${index % 2 === 0 ? 'light-green' : 'green'}`">
           <div class="title">{{ column.title }}</div>
           <p class="introduce">{{ column.introduce }}</p>
-          <div class="createDate">{{ column.createDate }}</div>
+          <div class="createDate">{{ formatDate(column.createDate) }}</div>
+          <div class="opt">
+            <n-icon class="icon" :component="CreateOutline" title="编辑" />
+            <n-icon class="icon" :component="EyeOutline" title="查看" />
+            <n-icon class="icon" :component="CloseCircleOutline" title="删除" />
+          </div>
         </div>
       </n-grid-item>
     </n-grid>
+
+    <div class="pagination">
+      <n-pagination
+        v-model:page="page"
+        v-model:page-size="pageSize"
+        :page-count="100"
+        show-size-picker
+        :page-sizes="[10, 20, 30, 40]"
+      >
+        <template #prefix> 共 {{ 1000 }} 项 </template>
+      </n-pagination>
+    </div>
   </n-card>
 
   <add-drawer :visible="drawerVisible" @updateShow="updateVisible"></add-drawer>
@@ -33,10 +50,15 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, onBeforeUnmount } from "vue";
-import { debounce } from "lodash";
 import { FormInst } from "naive-ui";
+import {
+  EyeOutline,
+  CreateOutline,
+  CloseCircleOutline,
+} from "@vicons/ionicons5";
 import { fetchColumn } from "@/services/column";
 import { IColumn } from "@/types/column";
+import { formatDate } from "@/util/date";
 import AddDrawer from "./view/addDrawer.vue";
 
 export default defineComponent({
@@ -44,7 +66,7 @@ export default defineComponent({
     AddDrawer,
   },
   setup() {
-    const cols = ref<number>(5);
+    const cols = ref<number>(24);
     const dataSource = ref<IColumn[]>([]);
     const formRef = ref<FormInst | null>(null);
     const drawerVisible = ref<boolean>(false);
@@ -58,17 +80,15 @@ export default defineComponent({
       }
     });
 
-    const resizeObserver = new ResizeObserver(
-      debounce(([entry]) => {
-        if (entry.contentBoxSize) {
-          const contentBoxSize = Array.isArray(entry.contentBoxSize)
-            ? entry.contentBoxSize[0]
-            : entry.contentBoxSize;
-          const newCols = Math.floor(contentBoxSize.inlineSize / 170);
-          cols.value = newCols;
-        }
-      }, 100)
-    );
+    const resizeObserver = new ResizeObserver(([entry]) => {
+      if (entry.contentBoxSize) {
+        const contentBoxSize = Array.isArray(entry.contentBoxSize)
+          ? entry.contentBoxSize[0]
+          : entry.contentBoxSize;
+        const newCols = Math.floor(contentBoxSize.inlineSize / 170);
+        cols.value = newCols;
+      }
+    });
 
     onMounted(() => {
       const dom = document.querySelector("#container-card")!;
@@ -81,6 +101,8 @@ export default defineComponent({
     });
 
     return {
+      page: ref(1),
+      pageSize: ref(20),
       cols,
       dataSource,
       formValue: ref({
@@ -90,6 +112,10 @@ export default defineComponent({
       }),
       formRef,
       drawerVisible,
+      formatDate,
+      EyeOutline,
+      CreateOutline,
+      CloseCircleOutline,
       updateVisible(visible: boolean) {
         drawerVisible.value = visible;
       },
@@ -109,6 +135,7 @@ export default defineComponent({
   }
 
   .card {
+    position: relative;
     padding: 10px;
     width: 150px;
     height: 200px;
@@ -118,7 +145,42 @@ export default defineComponent({
     }
     .title {
       font-weight: bold;
+      font-size: 18px;
     }
+    .createDate {
+      font-size: 12px;
+    }
+    .opt {
+      position: absolute;
+      bottom: 20px;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      .icon {
+        font-size: 16px;
+        cursor: pointer;
+        &:nth-child(1):hover {
+          color: green;
+        }
+        &:nth-child(2) {
+          font-size: 18px;
+        }
+        &:nth-child(2):hover {
+          color: purple;
+        }
+        &:nth-child(3):hover {
+          color: red;
+        }
+      }
+    }
+  }
+
+  .pagination {
+    display: flex;
+    flex-direction: row-reverse;
+    margin-top: 24px;
   }
 }
 
