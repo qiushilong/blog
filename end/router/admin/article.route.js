@@ -9,43 +9,52 @@ const {
 const router = new Router();
 
 /**
- * @api {get} /article/info 获取 article
+ * @api {post} /article/info 获取 article
  * @apiName getArticle
  * @apiGroup article 模块
  *
+ * @apiParam {number} page 页码
+ * @apiParam {number} pageSize 页容量
+ *
  * @apiSuccess {number} code 状态码
  * @apiSuccess {string} msg 提示信息
- * @apiSuccess {string} data article 列表
+ * @apiSuccess {string} data article 列表和 total
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
  *     {
- *         "code": 200,
- *         "msg": "获取 article 成功",
- *         "data": [
- *             {
- *               "id": 1,
- *               "title": "demo1",
- *               "createDate": "2022-11-26T16:21:29.000Z",
- *               "updateDate": null,
- *               "content": "# hello",
- *               "cover": "",
- *               "specialColumn": "",
- *               "tags": ""
- *             }
- *         ]
+ *       "code": 200,
+ *       "msg": "获取 article 成功",
+ *       "data": {
+ *         "list": [
+ *           {
+ *             "id": 1,
+ *             "title": "demo1",
+ *             "createDate": "2022-11-26T16:21:29.000Z",
+ *             "updateDate": null,
+ *             "content": "#h",
+ *             "cover": "",
+ *             "specialColumn": "",
+ *             "tags": []
+ *           },
+ *         ],
+ *         "total": 5
+ *       }
  *     }
  */
-router.get("/article/info", async (ctx, next) => {
+router.post("/article/info", koaBody(), async (ctx, next) => {
   try {
-    const result = await getArticleList();
+    const result = await getArticleList(ctx.request.body);
     ctx.body = {
       code: 200,
       msg: "获取 article 成功",
-      data: result.map((item) => {
-        item.tags = item.tags ? JSON.parse(item.tags) : [];
-        return item;
-      }),
+      data: {
+        list: result.list.map((item) => {
+          item.tags = item.tags ? JSON.parse(item.tags) : [];
+          return item;
+        }),
+        total: result.total,
+      },
     };
   } catch (error) {
     console.log(error);

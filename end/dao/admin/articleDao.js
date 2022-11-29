@@ -1,9 +1,23 @@
 const pool = require("~/connection/connection");
-const updateTool = require("~/util/updateTool");
+const { updateTool, fuzzyQueryTool } = require("~/util/sqlTool");
 
-async function getArticleList() {
-  const [res] = await pool.query("select * from article");
-  return res;
+async function getArticleList(payload) {
+  const { page, pageSize, title, specialColumn, tags } = payload;
+  const [str, arr] = fuzzyQueryTool({ title, specialColumn, tags });
+  console.log(`select * from article ${str} limit ?,?`);
+  const [res] = await pool.query(`select * from article ${str} limit ?,?`, [
+    ...arr,
+    (page - 1) * pageSize,
+    pageSize,
+  ]);
+  const [[{ total }]] = await pool.query(
+    `select count(*) total from article ${str}`,
+    arr
+  );
+  return {
+    list: res,
+    total: total,
+  };
 }
 
 async function addArticle(payload) {
@@ -17,7 +31,6 @@ async function addArticle(payload) {
 async function updateArticle(payload) {
   const { id, title, content, cover, column, tags } = payload;
   const [str, arr] = updateTool({ title, content, cover, column, tags });
-  console.log(str, arr);
   await pool.query(`update article set updateDate=now(),${str} where id=?`, [
     ...arr,
     id,

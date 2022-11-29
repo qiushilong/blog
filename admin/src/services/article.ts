@@ -1,8 +1,19 @@
+import qs from "qs";
 import request from "@/util/request";
 import { IArticle } from "@/types/article";
+import { IPageInfo } from "@/types/pageInfo";
 
-export async function fetchArticle() {
-  return await request.get<IArticle[]>("/article/info");
+interface IArticleReturn {
+  list: IArticle[];
+  total: number;
+}
+
+interface IQuery {
+  title?: string;
+}
+
+export async function fetchArticle(payload: Omit<IPageInfo, "total"> & IQuery) {
+  return await request.post<IArticleReturn>("/article/info", payload);
 }
 
 export async function addArticle(payload: IArticle) {

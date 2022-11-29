@@ -1,5 +1,5 @@
 const pool = require("~/connection/connection");
-const updateTool = require("~/util/updateTool");
+const { updateTool } = require("~/util/sqlTool");
 
 async function getSpecialColumnList() {
   const [res] = await pool.query("select * from special_column");

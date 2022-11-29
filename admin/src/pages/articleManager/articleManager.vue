@@ -5,7 +5,7 @@
       inline
       :label-width="80"
       :model="formValue"
-      :size="size"
+      size="medium"
       label-placement="left"
     >
       <n-form-item label="标题：" path="title">
@@ -20,6 +20,8 @@
     </n-form>
 
     <n-data-table
+      remote
+      :loading="loading"
       :columns="columns"
       :data="dataSource"
       :pagination="pagination"
@@ -29,9 +31,10 @@
 </template>
 
 <script lang="ts">
-import { h, defineComponent, ref } from "vue";
+import { h, defineComponent, ref, reactive, watch } from "vue";
 import { NButton, NTag, useMessage } from "naive-ui";
 import type { DataTableColumns, FormInst } from "naive-ui";
+import { debounce } from "lodash";
 import { formatDate } from "@/util/date";
 import { IArticle } from "@/types/article";
 import { fetchArticle } from "@/services/article";
@@ -100,26 +103,73 @@ export default defineComponent({
   setup() {
     const dataSource = ref<IArticle[]>([]);
     const formRef = ref<FormInst | null>(null);
-    const message = useMessage();
-    fetchArticle().then((result) => {
-      if (result) {
-        const { code, data } = result.data;
-        if (code === 200) {
-          dataSource.value = data;
-        }
-      }
+    const loading = ref(false);
+    const formValue = ref({
+      title: "",
+      specialColumn: "",
+      tags: "",
     });
+    const paginationReactive = reactive({
+      page: 1,
+      pageSize: 10,
+      showSizePicker: true,
+      pageSizes: [10, 20, 50],
+      pageCount: 10,
+      itemCount: 0,
+      prefix: () => `共 ${paginationReactive.itemCount} 条`,
+      onChange: (page: number) => {
+        paginationReactive.page = page;
+        getArticleList();
+      },
+      onUpdatePageSize: (pageSize: number) => {
+        paginationReactive.pageSize = pageSize;
+        paginationReactive.page = 1;
+        getArticleList();
+      },
+    });
+    const message = useMessage();
+
+    watch(
+      [
+        () => formValue.value.title,
+        () => formValue.value.specialColumn,
+        () => formValue.value.tags,
+      ],
+      debounce(() => {
+        getArticleList();
+      }, 500)
+    );
+
+    const getArticleList = () => {
+      console.log(formValue.value);
+      loading.value = true;
+      fetchArticle({
+        page: paginationReactive.page,
+        pageSize: paginationReactive.pageSize,
+        ...formValue.value,
+      })
+        .then((result) => {
+          if (result) {
+            const { code, data } = result.data;
+            if (code === 200) {
+              dataSource.value = data.list;
+              paginationReactive.itemCount = data.total;
+            }
+          }
+        })
+        .finally(() => {
+          loading.value = false;
+        });
+    };
+    getArticleList();
+
     return {
+      loading,
       dataSource,
       columns,
-      pagination: false as const,
+      pagination: paginationReactive,
       formRef,
-      size: ref<"small" | "medium" | "large">("medium"),
-      formValue: ref({
-        title: "",
-        specialColumn: "",
-        tags: "",
-      }),
+      formValue,
       handleValidateClick(e: MouseEvent) {
         e.preventDefault();
         formRef.value?.validate((errors) => {

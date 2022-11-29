@@ -1,9 +1,8 @@
 import request from "@/util/request";
 import { IColumn } from "@/types/column";
-import { AxiosRequestConfig } from "axios";
 
 export async function fetchColumn() {
-  return await request.get<IColumn[]>("/specialColumn/info");
+  return await request.post<IColumn[]>("/specialColumn/info");
 }
 
 export async function addColumn(payload: FormData) {

@@ -24,13 +24,17 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 /**
- * @api {get} /specialColumn/info 获取 specialColumn
+ * @api {post} /specialColumn/info 获取 specialColumn
  * @apiName getSpecialColumn
  * @apiGroup specialColumn 模块
  *
  * @apiSuccess {number} code 状态码
  * @apiSuccess {string} msg 提示信息
  * @apiSuccess {string} data specialColumn 列表
+ *
+ * @apiParam {number} current 页码
+ * @apiParam {number} pageSize 页容量
+ * @apiParam {string} title 标题
  *
  * @apiSuccessExample Success-Response:
  *     HTTP/1.1 200 OK
@@ -51,7 +55,7 @@ const upload = multer({ storage });
  *         ]
  *     }
  */
-router.get("/specialColumn/info", async (ctx, next) => {
+router.post("/specialColumn/info", koaBody(), async (ctx, next) => {
   try {
     const result = await getSpecialColumnList();
     ctx.body = {
@@ -97,7 +101,7 @@ router.post("/specialColumn/add", upload.single("cover"), async (ctx, next) => {
     console.log("ctx.file", ctx.file);
     console.log("ctx.request.body", ctx.request.body);
 
-    await addSpecialColumn({ ...ctx.request.body, cover: ctx.file.filename });
+    await addSpecialColumn({ ...ctx.request.body, cover: ctx.file?.filename });
     ctx.body = {
       code: 200,
       msg: "添加 specialColumn 成功",

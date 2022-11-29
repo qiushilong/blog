@@ -1,5 +1,5 @@
 const pool = require("~/connection/connection");
-const updateTool = require("~/util/updateTool");
+const { updateTool } = require("~/util/sqlTool");
 
 async function getTodoList() {
   const [res] = await pool.query("select * from todo_list");
