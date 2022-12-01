@@ -19,3 +19,7 @@ export async function fetchArticle(payload: Omit<IPageInfo, "total"> & IQuery) {
 export async function addArticle(payload: IArticle) {
   return await request.post<IArticle>("/article/add", payload);
 }
+
+export async function deleteArticle(payload: { id: number }) {
+  return await request.post<IArticle>("/article/delete", payload);
+}

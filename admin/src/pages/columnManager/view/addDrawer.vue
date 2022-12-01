@@ -79,8 +79,6 @@ export default defineComponent({
       ],
     };
 
-    console.log(props.visible);
-
     return {
       formRef,
       rPasswordFormItemRef,
@@ -97,8 +95,20 @@ export default defineComponent({
             >) {
               formData.append(key, modelRef.value[key] as string | Blob);
             }
-            console.log(formData.get("cover"));
-            addColumn(formData).then((result) => {});
+            addColumn(formData).then((result) => {
+              if (result) {
+                const { code, msg } = result.data;
+                if (code === 200) {
+                  message.success(msg);
+                } else {
+                  message.error(msg);
+                }
+                ctx.emit("updateShow", {
+                  visible: false,
+                  update: true,
+                });
+              }
+            });
           } else {
             console.log(errors);
             message.error("验证失败");
@@ -106,7 +116,10 @@ export default defineComponent({
         });
       },
       updateShow(visible: boolean) {
-        ctx.emit("updateShow", visible);
+        ctx.emit("updateShow", {
+          visible: visible,
+          update: false,
+        });
       },
       fileUp(file: UploadFileInfo[]) {
         if (file[0]) {

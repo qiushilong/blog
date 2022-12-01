@@ -17,7 +17,7 @@
       <n-button type="primary" @click="showAddDrawer">新增</n-button>
     </header>
 
-    <n-grid :x-gap="12" :y-gap="20" :cols="cols">
+    <n-grid v-if="!loading" :x-gap="12" :y-gap="20" :cols="cols">
       <n-grid-item v-for="(column, index) in dataSource" :key="column.id">
         <div :class="`card ${index % 2 === 0 ? 'light-green' : 'green'}`">
           <div class="title">{{ column.title }}</div>
@@ -32,7 +32,7 @@
       </n-grid-item>
     </n-grid>
 
-    <div class="pagination">
+    <div class="pagination" v-if="!loading">
       <n-pagination
         v-model:page="page"
         v-model:page-size="pageSize"
@@ -40,9 +40,11 @@
         show-size-picker
         :page-sizes="[10, 20, 30, 40]"
       >
-        <template #prefix> 共 {{ 1000 }} 项 </template>
+        <template #prefix> 共 {{ 1000 }} 条 </template>
       </n-pagination>
     </div>
+
+    <n-spin size="large" v-if="loading" />
   </n-card>
 
   <add-drawer :visible="drawerVisible" @updateShow="updateVisible"></add-drawer>
@@ -70,15 +72,24 @@ export default defineComponent({
     const dataSource = ref<IColumn[]>([]);
     const formRef = ref<FormInst | null>(null);
     const drawerVisible = ref<boolean>(false);
+    const loading = ref<boolean>(false);
 
-    fetchColumn().then((result) => {
-      if (result) {
-        const { code, data } = result.data;
-        if (code === 200) {
-          dataSource.value = data;
-        }
-      }
-    });
+    const getColumnList = () => {
+      loading.value = true;
+      fetchColumn()
+        .then((result) => {
+          if (result) {
+            const { code, data } = result.data;
+            if (code === 200) {
+              dataSource.value = data;
+            }
+          }
+        })
+        .finally(() => {
+          loading.value = false;
+        });
+    };
+    getColumnList();
 
     const resizeObserver = new ResizeObserver(([entry]) => {
       if (entry.contentBoxSize) {
@@ -110,14 +121,22 @@ export default defineComponent({
         specialColumn: "",
         tags: "",
       }),
+      loading,
       formRef,
       drawerVisible,
       formatDate,
       EyeOutline,
       CreateOutline,
       CloseCircleOutline,
-      updateVisible(visible: boolean) {
+      updateVisible({
+        visible,
+        update,
+      }: {
+        visible: boolean;
+        update: boolean;
+      }) {
         drawerVisible.value = visible;
+        update && getColumnList();
       },
       showAddDrawer() {
         drawerVisible.value = true;

@@ -32,72 +32,12 @@
 
 <script lang="ts">
 import { h, defineComponent, ref, reactive, watch } from "vue";
-import { NButton, NTag, useMessage } from "naive-ui";
+import { NTag, useMessage, useDialog } from "naive-ui";
 import type { DataTableColumns, FormInst } from "naive-ui";
 import { debounce } from "lodash";
 import { formatDate } from "@/util/date";
 import { IArticle } from "@/types/article";
-import { fetchArticle } from "@/services/article";
-
-const columns: DataTableColumns<IArticle> = [
-  {
-    title: "编号",
-    key: "id",
-    width: 70,
-  },
-  {
-    title: "标题",
-    key: "title",
-  },
-  {
-    title: "内容",
-    key: "content",
-    ellipsis: {
-      tooltip: true,
-    },
-  },
-  {
-    title: "创建时间",
-    key: "createDate",
-    render(row) {
-      return row.createDate ? formatDate(row.createDate) : "";
-    },
-  },
-  {
-    title: "更新时间",
-    key: "updateDate",
-    render(row) {
-      return row.updateDate ? formatDate(row.updateDate) : "";
-    },
-  },
-  {
-    title: "封面",
-    key: "cover",
-  },
-  {
-    title: "专栏",
-    key: "specialColumn",
-  },
-
-  {
-    title: "标签",
-    key: "tags",
-    render(row) {
-      if (row.tags.length === 0) {
-        return "";
-      }
-      return row.tags.map((tag) =>
-        h(
-          NTag,
-          {
-            style: "margin-right:10px",
-          },
-          { default: () => tag }
-        )
-      );
-    },
-  },
-];
+import { fetchArticle, deleteArticle } from "@/services/article";
 
 export default defineComponent({
   setup() {
@@ -128,6 +68,97 @@ export default defineComponent({
       },
     });
     const message = useMessage();
+    const dialog = useDialog();
+    const columns: DataTableColumns<IArticle> = [
+      {
+        title: "编号",
+        key: "id",
+        width: 70,
+      },
+      {
+        title: "标题",
+        key: "title",
+      },
+      {
+        title: "内容",
+        key: "content",
+        ellipsis: {
+          tooltip: true,
+        },
+      },
+      {
+        title: "创建时间",
+        key: "createDate",
+        render(row) {
+          return row.createDate ? formatDate(row.createDate) : "";
+        },
+      },
+      {
+        title: "更新时间",
+        key: "updateDate",
+        render(row) {
+          return row.updateDate ? formatDate(row.updateDate) : "";
+        },
+      },
+      {
+        title: "封面",
+        key: "cover",
+      },
+      {
+        title: "专栏",
+        key: "specialColumn",
+      },
+      {
+        title: "标签",
+        key: "tags",
+        render(row) {
+          if (row.tags.length === 0) {
+            return "";
+          }
+          return row.tags.map((tag) =>
+            h(
+              NTag,
+              {
+                style: "margin-right:10px",
+              },
+              { default: () => tag }
+            )
+          );
+        },
+      },
+      {
+        title: "操作",
+        key: "opt",
+        render(row) {
+          return h(
+            "div",
+            {},
+            {
+              default: () => {
+                return [
+                  h(
+                    "span",
+                    {
+                      style: "cursor:pointer",
+                      onClick: () => clickEdit(row.id),
+                    },
+                    { default: () => "修改" }
+                  ),
+                  h(
+                    "span",
+                    {
+                      style: "margin-left:10px;cursor:pointer",
+                      onClick: () => clickDelete(row.id),
+                    },
+                    { default: () => "删除" }
+                  ),
+                ];
+              },
+            }
+          );
+        },
+      },
+    ];
 
     watch(
       [
@@ -163,6 +194,34 @@ export default defineComponent({
     };
     getArticleList();
 
+    const clickEdit = (rowId: number) => {
+      console.log("clickEdit", rowId);
+    };
+
+    const clickDelete = (rowId: number) => {
+      console.log("clickDelete", rowId);
+      dialog.warning({
+        title: "警告",
+        content: `你确定删除 id 为 ${rowId} 的这一项吗 ？`,
+        positiveText: "确定",
+        negativeText: "取消",
+        onPositiveClick: () => {
+          deleteArticle({ id: rowId }).then((result) => {
+            if (result) {
+              const { code, msg } = result.data;
+              if (code === 200) {
+                message.success(msg);
+                getArticleList();
+              }
+            }
+          });
+        },
+        onNegativeClick: () => {
+          // message.error("不确定");
+        },
+      });
+    };
+
     return {
       loading,
       dataSource,
@@ -170,6 +229,8 @@ export default defineComponent({
       pagination: paginationReactive,
       formRef,
       formValue,
+      clickEdit,
+      clickDelete,
       handleValidateClick(e: MouseEvent) {
         e.preventDefault();
         formRef.value?.validate((errors) => {
@@ -186,3 +247,11 @@ export default defineComponent({
   },
 });
 </script>
+
+<style scoped lang="less">
+.opt {
+  .edit {
+    cursor: pointer;
+  }
+}
+</style>
