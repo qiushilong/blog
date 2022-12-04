@@ -1,11 +1,11 @@
 <template>
-  <Tutorial />
+  <div class="container">
+    <blog-header></blog-header>
+
+    <img class="bg" src="~/assets/image/bg.jpg" alt="background-image" />
+  </div>
 </template>
 
-<script lang="ts">
-import Vue from 'vue'
+<script lang="ts" setup></script>
 
-export default Vue.extend({
-  name: 'IndexPage',
-})
-</script>
+<style scoped lang="scss"></style>
